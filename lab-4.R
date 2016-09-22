@@ -25,8 +25,11 @@ rbinom(number.of.samples, number.of.trials.per.sample, probability.of.success)
 # each subject makes 20 guesses.
 # of course, ESP doesn't exist, so the probability of a successful guess is 0.50.
 # store the result in a vector called esp.data
+number.of.samples <- 100
+number.of.trials.per.sample <- 20
+probability.of.success <- 0.5
 
-esp.data <- NA # answer needed here.
+esp.data <- rbinom(number.of.samples, number.of.trials.per.sample, probability.of.success)
 
 # a quick way to visualize a distribution is with the hist() function:
 hist(esp.data)
@@ -45,7 +48,11 @@ dbinom(value.to.check, number.of.trials, probability.of.success)
 # questions correctly, if they have a 0.9 probability of giving a correct answer
 # for each individual question.
 
-# answer needed here.
+value.to.check <- 87
+number.of.trials <- 100
+probability.of.success <- 0.9
+
+dbinom(value.to.check, number.of.trials, probability.of.success)
 
 # with dbinom, you can use a vector as the first argument, to check the probability
 # of multiple values at the same time:
@@ -57,8 +64,10 @@ dbinom(values, 8, 0.5)
 # for flipping 16 fair coins, counting the total number of heads.
 # hint: create one vector for the different possible outcomes
 #       then use dbinom to calculate the probability of all of the elements in the vector
-
-# answer needed here.
+?seq
+coins <- seq.int(0,16,1)
+coin.dis <- dbinom(coins, 16, 0.5)
+plot(coins, coin.dis)
 
 # quick detour #
 
@@ -80,14 +89,17 @@ hist(hist.sample, xlim=c(0,100)) # compare this plot to the line above.
 # generate 100 samples from a normal distribution with mean 0 and standard deviation 10.
 # then use hist() to create a histogram of these samples.
 
-# answer needed here.
+norm.dis <- rnorm(100, 0, 10)
+hist(norm.dis)
 
 # now plot the probability density function of this distribution.
 # use the same strategy as you did above with the binomial to find the density of the normal
 # distribution with mean 0 and sd 10 for values between -50 and 50. the distribution is continuous
 # so, choose a reasonably small step size between values (remember the seq() function).
 
-# answer needed here.
+norm <- seq(-50,50,.1)
+norm.dis <- dnorm(norm, 0, 10)
+plot(norm, norm.dis)
 
 #### practice calculating likelihoods ####
 
@@ -98,13 +110,15 @@ esp.practice.data <- data.frame(subject=1:10, n.correct=c(11,10,6,10,6,12,10,8,9
 
 # calculate the likelihood (regular, not log) for this data for three different values
 # of the probability of success parameter: 0.4, 0.5, and 0.6.
-# hint: prod() will multiple all elements of a vector together.
+# hint: prod() will multiple all elements of a vector together
 
-# answer needed here.
+a <- prod(dbinom(esp.practice.data$n.correct, 20, 0.4))
+b <- prod(dbinom(esp.practice.data$n.correct, 20, 0.5))
+c <- prod(dbinom(esp.practice.data$n.correct, 20, 0.6))
 
 # which parameter value of those options is most likely?
-
-# answer here.
+results <- c(a,b,c)
+best.parameter <- which.max(results)
 
 # here is a sample of response times for a single subject from a rapid decision making experiment.
 rt.sample <- c(391.5845, 411.9970, 358.6373, 505.3099, 616.2892, 481.0751, 422.3132, 511.7213, 205.2692, 522.3433, 370.1850,
@@ -116,26 +130,27 @@ rt.sample <- c(391.5845, 411.9970, 358.6373, 505.3099, 616.2892, 481.0751, 422.3
 # hint: sum() adds the numbers in a vector. log() is the natural log function, or log=T for dnorm().
 
 # 1) mean 350, sd 50
-# answer needed here.
+a <- sum(dnorm(rt.sample, 350, 50, log=T))
 
 # 2) mean 400, sd 50
-# answer needed here.
+b <- sum(dnorm(rt.sample, 400, 50, log=T))
 
 # 3) mean 450, sd 50
-# answer needed here.
+c <- sum(dnorm(rt.sample, 450, 50, log=T))
 
 # 4) mean 350, sd 100
-# answer needed here.
+d <- sum(dnorm(rt.sample, 350, 100, log=T))
 
 # 5) mean 400, sd 100
-# answer needed here.
+e <- sum(dnorm(rt.sample, 400, 100, log=T))
 
 # 6) mean 450, sd 100
-# answer needed here.
+f <- sum(dnorm(rt.sample, 450, 100, log=T))
 
 # which parameter set has the highest likelihood?
-
+results <- c(a,b,c,d,e,f)
 # answer needed here.
+best.answer <- which.max(results)
 
 # here is a set of data for a subject in a categorization experiment, modeled with GCM.
 # calculate the log likelihood of the parameters in the model (which i am not showing you).
