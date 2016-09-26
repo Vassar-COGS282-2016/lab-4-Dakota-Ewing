@@ -163,7 +163,15 @@ gcm.practice.data <- data.frame(correct.response = c(T, T, T, T, F, T, T, F, T, 
                                 gcm.probability.correct = c(0.84, 0.80, 0.84, 0.80, 0.79, 0.86, 0.89, 0.87, 0.69, 0.85, 0.75,
                                                             0.74, 0.82, 0.85, 0.87, 0.69, 0.83, 0.87, 0.80, 0.76))
 
-# answer needed here.
+gcm.practice.data$likelihood <- mapply(function(response, prob)
+{
+  if(response == T){return(prob)}
+  else {return(1-prob)}
+  },
+  gcm.practice.data$correct.response, gcm.practice.data$gcm.probability.correct)
+
+gcmloglikelihood <- sum(log(gcm.practice.data$likelihood))
+gcmloglikelihood
 
 #### maximum likelihood estimation ####
 
@@ -178,12 +186,17 @@ same.diff.data <- c(32, 29, 31, 34, 26, 29, 31, 34, 29, 31, 30, 29, 31, 34, 33, 
 # function for values of theta (probability of a correct response) between 0.5 and 0.9, in steps of 0.01.
 # start by writing a function that calculates the likelihood (not log) for the entire set of data given a value of theta.
 
-# answer needed here.
+
+
+likelihood.grid <- function(theta){
+  coins <- seq.int(1,40,1)
+  coin.dis <- dbinom(coins, 40, theta)
+}
 
 # then use sapply to run the function for each possible value of theta in the set. use seq() to generate the
 # set of possible values. plot the set of values on the x axis and the corresponding likelihoods on the y axis.
 
-# answer needed here.
+theta.grid <- seq(0.5,0.9,0.01)
 
 # the "true" underlying value i used to generate the data was 0.75. does that match up with the grid search?
 
