@@ -189,19 +189,26 @@ same.diff.data <- c(32, 29, 31, 34, 26, 29, 31, 34, 29, 31, 30, 29, 31, 34, 33, 
 
 
 likelihood.grid <- function(theta){
-  coins <- seq.int(1,40,1)
-  coin.dis <- dbinom(coins, 40, theta)
+  like.coin <- dbinom(same.diff.data, 40, theta)
+  return(prod(like.coin))
 }
-
+test <- likelihood.grid(0.75)
+test
 # then use sapply to run the function for each possible value of theta in the set. use seq() to generate the
 # set of possible values. plot the set of values on the x axis and the corresponding likelihoods on the y axis.
-
+?sapply
 theta.grid <- seq(0.5,0.9,0.01)
-
+parameters <- expand.grid(list(theta=theta.grid))
+parameters$likelihoods <- sapply(theta.grid, function(x){ return(likelihood.grid(x)) })
+best.theta <- max(parameters$likelihoods)
+best.theta
+plot(theta.grid, parameters$likelihoods)
 # the "true" underlying value i used to generate the data was 0.75. does that match up with the grid search?
+# no, the max imum grid search likelihood does not produce 
+likelihood.grid(0.75)
 
 ## mle with optim()
-
+?dnorm
 # in this section, you'll do model recovery for a descriptive model of the linear relationship 
 # between two continuous variables.
 
@@ -211,17 +218,18 @@ theta.grid <- seq(0.5,0.9,0.01)
 # create a vector of x values from 0 to 100, and the corresponding vector of y values,
 # then plot these with x values on the x axis, and y values on the y axis.
 
-# answer needed here.
-
+x <- seq(0,100,1)
+y <- 4 + .8*x
+plot(x,y)
 # now let's assume that the relationship between x and y isn't perfect. there's a bit of random
 # noise. add a random sample from a normal distribution with mean 0 and sd 10 to each y value.
 # hint: there are 101 y values, so you need 101 samples.
-
-# answer needed here.
+?rnorm
+y.n <- y + rnorm(101, 0, 10)
 
 # plot the data again, with the new noisy y values.
 
-# answer needed here.
+plot(x,y.n)
 
 # there are three parameter values that control this plot,
 # the intercept of the line: 4
@@ -251,27 +259,44 @@ dnorm(y.observed, y.predicted, 10)
 
 # write the code to see how likely it is that y will be 33 when x is 29? (assuming sd = 10)
 # the correct answer is 0.03371799...
-
-# answer needed here.
+x.observed <- 29
+y.predicted <- 4 + 0.8*x.observed
+y.observed <- 33
+dnorm(y.observed, y.predicted, 10)
 
 # now generalize your solution to compute the likelihood of each value of y that you generated above.
 # in other words, write the code that takes a vector of x and y values, and returns the probability
 # of each pair given that the relationship between x and y is y <- 4 + 0.8*x and the normal distribution has an sd of 10.
 
-# answer needed here.
+y.likely <- mapply(function(y,y.n){
+  return(dnorm(y.n, y, 10))
+}, y.n, y)
 
 # now generalize your solution one step further. write a function that takes in a vector of parameters,
 # where parameters[1] is the intercept, parameters[2] is the slope, and parameters[3] is the sd of the normal,
 # and returns the total **negative log likelihood**. remember, we want the negative log likelihood because
 # optim() will find the set of parameters that minimizes a function.
-
-# answer needed here.
+x.observed <- seq(0,100,1)
+y.observed <- 4 + .8*x.observed + rnorm(101, 0, 10)
+par.likelihood <- function(parameters){
+  i <- parameters[1]
+  s <- parameters[2]
+  sd <- parameters[3]
+  y.predicted <- i + s*x.observed 
+  if(sd <= 0){
+    return(NA)
+  }
+  else{
+  return(sum(dnorm(y.observed, y.predicted, sd, log = T)))}
+}
 
 # use optim() and Nelder-Mead to search for the best fitting parameters. remember to ensure that sd > 0
 # and return NA if it is not.
 
-# answer needed here.
+fit <- optim(c(1,1,1), par.likelihood, method="Nelder-Mead")
 
 # finally, plot the best fitting line on your points by using the abline() function, and the parameters that optim() found.
 
-# answer needed here.
+plot(x.observed,y.observed)
+abline(a=4, b=.8, col='blue')
+abline(a=fit$par[1], b=fit$par[2], col='red')
